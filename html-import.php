@@ -11,6 +11,7 @@ License: GPL 2
 
 require_once ( 'html-importer.php' );
 require_once ( 'html-import-options.php' );
+require_once ( 'html-import-utilities.php' );
 
 // plugin_activation_check() by Otto
 function html_import_activation_check() {

@@ -9,6 +9,7 @@ jQuery(document).ready(function($) {
 			var rowID = $(this).parents("tr").attr("id");
 			//console.log("#"+rowID+" tr#"+importing+"-"+tag);
 	        $("#"+rowID+" tr#"+importing+"-region").hide();
+			$("#"+rowID+" tr#"+importing+"-direct").hide();
 			$("#"+rowID+" tr#"+importing+"-tag").hide();
 	        $("#"+rowID+" tr#"+importing+"-"+tag).show();
 	    });

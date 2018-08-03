@@ -17,6 +17,10 @@ function html_import_get_options() {
 		'content_tag' => __( 'div', 'import-html-pages' ),
 		'content_tagatt' => __( 'id', 'import-html-pages' ),
 		'content_attval' => __( 'content', 'import-html-pages' ),
+		'content_before' => 0,//VFS CUSTOM
+		'content_before_content' => '',//VFS CUSTOM
+		'content_after' => 0,//VFS CUSTOM
+		'content_after_content' => '',//VFS CUSTOM
 		'clean_html' => 0,
 		'encode' => 1,
 		'allow_tags' => '<p><br><img><a><ul><ol><li><dl><dt><dd><blockquote><cite><em><i><strong><b><h2><h3><h4><h5><h6><hr>',
@@ -283,58 +287,83 @@ function html_import_options_page() { ?>
 				</td>
 				</tr>
 				<tr class="clean_html" <?php if ( !$options['clean_html'] ) echo 'style="display:none;"'; ?>>
-				 
-			        	<th><?php _e( "Allowed HTML", 'import-html-pages' ); ?></th>
-			            <td>    <label>
-			                <input type="text" name="html_import[allow_tags]" id="allow_tags" 
-								value="<?php echo esc_attr( $options['allow_tags'] ); ?>" class="widefloat" />  </label><br />
-			                <span class="description"><?php _e( "Enter tags ( with brackets ) to be preserved. All tags not listed here will be removed. <br />Suggested: ", 'import-html-pages' ); ?> 
-			                &lt;p&gt;
-			                &lt;br&gt;
-			                &lt;img&gt;
-			                &lt;a&gt;
-			                &lt;ul&gt;
-			                &lt;ol&gt;
-			                &lt;li&gt;
-							&lt;dl&gt;
-							&lt;dt&gt;
-							&lt;dd&gt;
-			                &lt;blockquote&gt;
-			                &lt;cite&gt;
-			                &lt;em&gt;
-			                &lt;i&gt;
-			                &lt;strong&gt;
-			                &lt;b&gt;
-			                &lt;h2&gt;
-			                &lt;h3&gt;
-			                &lt;h4&gt;
-			                &lt;h5&gt;
-			                &lt;h6&gt;
-			                &lt;hr&gt;
-			                <br />
+					<th><?php _e( "Allowed HTML", 'import-html-pages' ); ?></th>
+					<td>    <label>
+						<input type="text" name="html_import[allow_tags]" id="allow_tags" 
+							value="<?php echo esc_attr( $options['allow_tags'] ); ?>" class="widefloat" />  </label><br />
+						<span class="description"><?php _e( "Enter tags ( with brackets ) to be preserved. All tags not listed here will be removed. <br />Suggested: ", 'import-html-pages' ); ?> 
+						&lt;p&gt;
+						&lt;br&gt;
+						&lt;img&gt;
+						&lt;a&gt;
+						&lt;ul&gt;
+						&lt;ol&gt;
+						&lt;li&gt;
+						&lt;dl&gt;
+						&lt;dt&gt;
+						&lt;dd&gt;
+						&lt;blockquote&gt;
+						&lt;cite&gt;
+						&lt;em&gt;
+						&lt;i&gt;
+						&lt;strong&gt;
+						&lt;b&gt;
+						&lt;h2&gt;
+						&lt;h3&gt;
+						&lt;h4&gt;
+						&lt;h5&gt;
+						&lt;h6&gt;
+						&lt;hr&gt;
+						<br />
 
-			                <em><?php _e( "If you have data tables, also include:", 'import-html-pages' ); ?></em> 
-			                &lt;table&gt;
-			                &lt;tbody&gt;
-			                &lt;thead&gt;
-			                &lt;tfoot&gt;
-			                &lt;tr&gt;
-			                &lt;td&gt;
-			                &lt;th&gt;
-			                &lt;caption&gt;
-			                &lt;colgroup&gt;
-			                </span>
-			            </td> 
-					</tr>
-					<tr class="clean_html" <?php if ( !$options['clean_html'] ) echo 'style="display:none;"'; ?>>
+						<em><?php _e( "If you have data tables, also include:", 'import-html-pages' ); ?></em> 
+						&lt;table&gt;
+						&lt;tbody&gt;
+						&lt;thead&gt;
+						&lt;tfoot&gt;
+						&lt;tr&gt;
+						&lt;td&gt;
+						&lt;th&gt;
+						&lt;caption&gt;
+						&lt;colgroup&gt;
+						</span>
+					</td> 
+				</tr>
+				<tr class="clean_html" <?php if ( !$options['clean_html'] ) echo 'style="display:none;"'; ?>>
 					<th><?php _e( "Allowed attributes", 'import-html-pages' ); ?></th>
-			            <td><label>
-				 			<input type="text" name="html_import[allow_attributes]" id="allow_attributes" 
-								value="<?php echo esc_attr( $options['allow_attributes'] ); ?>" class="widefloat" />  </label><br />
-			            <span class="description"><?php _e( "Enter attributes separated by commas. All attributes not listed here will be removed. <br />Suggested: href, src, alt, title<br />
-			    			<em>If you have data tables, also include:</em> summary, rowspan, colspan, span", 'import-html-pages' ); ?></span>
-			            </td> 
-			       </tr>
+					<td><label>
+						<input type="text" name="html_import[allow_attributes]" id="allow_attributes" 
+							value="<?php echo esc_attr( $options['allow_attributes'] ); ?>" class="widefloat" />  </label><br />
+						<span class="description"><?php _e( "Enter attributes separated by commas. All attributes not listed here will be removed. <br />Suggested: href, src, alt, title<br />
+						<em>If you have data tables, also include:</em> summary, rowspan, colspan, span", 'import-html-pages' ); ?></span>
+					</td> 
+			    </tr>
+				<tr>
+					<th></th>
+					<td>
+						<label><input name="html_import[content_before]" id="content_before" value="1" type="checkbox" class="toggle" <?php checked( $options['content_before'] ); ?> /> 
+							 <?php _e( "Add markup before Content", 'import-html-pages' ); ?></label>
+					</td>
+				</tr>
+				<tr class="content_before" <?php if ( !$options['content_before'] ) echo 'style="display:none;"'; ?>>
+					<th><?php _e( "Content Before", 'import-html-pages' ); ?></th>
+					<td><label>
+						<textarea name="html_import[content_before_content]" id="content_before_content" rows="10" cols="100"><?php echo esc_attr( $options['content_before_content'] ); ?></textarea>
+					</td> 
+			    </tr>
+				<tr>
+					<th></th>
+					<td>
+						<label><input name="html_import[content_after]" id="content_after" value="1" type="checkbox" class="toggle" <?php checked( $options['content_after'] ); ?> /> 
+							 <?php _e( "Add markup after Content", 'import-html-pages' ); ?></label>
+					</td>
+				</tr>
+				<tr class="content_after" <?php if ( !$options['content_after'] ) echo 'style="display:none;"'; ?>>
+					<th><?php _e( "Content After", 'import-html-pages' ); ?></th>
+					<td><label>
+						<textarea name="html_import[content_after_content]" id="content_after_content" rows="10" cols="100"><?php echo esc_attr( $options['content_after_content'] ); ?></textarea>
+					</td> 
+			    </tr>
 			</table>
 			
 		</div>
@@ -576,11 +605,15 @@ function html_import_options_page() { ?>
 				<input type="radio" name="html_import[import_field][<?php echo $index; ?>]"
 					value="region" class="showrow" title="customfield" <?php checked( $options['import_field'][$index], 'region' ); ?> />
 				<?php _e( 'Dreamweaver template region', 'import-html-pages' ); ?></label>
+				<label>
+				<input type="radio" name="html_import[import_field][<?php echo $index; ?>]"
+					value="direct" class="showrow" title="customfield" <?php checked( $options['import_field'][$index], 'direct' ); ?> />
+				<?php _e( 'Direct Input', 'import-html-pages' ); ?></label>
 			</p>
 
 
 			<table>
-				<tr id="customfield-tag" <?php if ( $options['import_field'][$index] == 'region' ) echo 'style="display: none;"'; ?> >
+				<tr id="customfield-tag" <?php if ( $options['import_field'][$index] == 'region' || $options['import_field'][$index] == 'direct' ) echo 'style="display: none;"'; ?> >
 		     	<td class="taginput">
 		            <label><?php _e( "Tag", 'import-html-pages' ); ?><br />
 		            <input type="text" name="html_import[customfield_tag][<?php echo $index; ?>]" 
@@ -603,11 +636,19 @@ function html_import_options_page() { ?>
 
 		        </td>
 				</tr>
-				<tr id="customfield-region" <?php if ( $options['import_field'][$index] == 'tag' ) echo 'style="display: none;"'; ?> >
+				<tr id="customfield-region" <?php if ( $options['import_field'][$index] == 'tag' || $options['import_field'][$index] == 'direct' ) echo 'style="display: none;"'; ?> >
 					<td colspan="3">
 						<label><?php _e( "Dreamweaver template region", 'import-html-pages' ); ?><br />
 				        <input type="text" name="html_import[customfield_region][<?php echo $index; ?>]" 
 							value="<?php echo esc_attr( $options['customfield_region'][$index] ); ?>" />  
+				        </label>
+					</td>
+				</tr>
+				<tr id="customfield-direct" <?php if ( $options['import_field'][$index] == 'tag' || $options['import_field'][$index] == 'region'  ) echo 'style="display: none;"'; ?> >
+					<td colspan="3">
+						<label><?php _e( "Direct Input", 'import-html-pages' ); ?><br />
+				        <input type="text" name="html_import[customfield_direct][<?php echo $index; ?>]" 
+							value="<?php echo esc_attr( $options['customfield_direct'][$index] ); ?>" />  
 				        </label>
 					</td>
 				</tr>
@@ -641,6 +682,10 @@ function html_import_options_page() { ?>
 				<input type="radio" name="html_import[import_field][]"
 					value="region" class="showrow" title="customfield" />
 				<?php _e( 'Dreamweaver template region', 'import-html-pages' ); ?></label>
+				<label>
+				<input type="radio" name="html_import[import_field][]"
+					value="direct" class="showrow" title="customfield" />
+				<?php _e( 'Direct Input', 'import-html-pages' ); ?></label>
 			</p>
 
 
@@ -669,6 +714,13 @@ function html_import_options_page() { ?>
 					<td colspan="3">
 						<label><?php _e( "Dreamweaver template region", 'import-html-pages' ); ?><br />
 				        <input type="text" name="html_import[customfield_region][]" value="" />  
+				        </label>
+					</td>
+				</tr>
+				<tr id="customfield-direct" style="display: none;">
+					<td colspan="3">
+						<label><?php _e( "Direct Input", 'import-html-pages' ); ?><br />
+				        <input type="text" name="html_import[customfield_direct][]" value="" />  
 				        </label>
 					</td>
 				</tr>
@@ -828,6 +880,10 @@ function html_import_validate_options( $input ) {
 	if ( !empty( $input['content_tag'] ) )		$input['content_tag'] 	 =	sanitize_text_field( $input['content_tag'] );
 	if ( !empty( $input['content_tagatt'] ) )	$input['content_tagatt'] = 	sanitize_text_field( $input['content_tagatt'] );
 	if ( !empty( $input['content_attval'] ) )	$input['content_attval'] = 	sanitize_text_field( $input['content_attval'] );
+	if ( !empty( $input['content_before'] ) )	$input['content_before'] = 	sanitize_text_field( $input['content_before'] );// VFS CUSTOM
+	if ( !empty( $input['content_before_content'] ) )	$input['content_before_content'] = 	wp_kses_post( $input['content_before_content'] );// VFS CUSTOM
+	if ( !empty( $input['content_after'] ) )	$input['content_after'] = 	sanitize_text_field( $input['content_after'] );// VFS CUSTOM
+	if ( !empty( $input['content_after_content'] ) )	$input['content_after_content'] = 	wp_kses_post( $input['content_after_content'] );// VFS CUSTOM
 	if ( !empty( $input['title_region'] ) )		$input['title_region'] 	 = 	sanitize_text_field( $input['title_region'] );
 	if ( !empty( $input['title_tag'] ) )		$input['title_tag'] 	 = 	sanitize_text_field( $input['title_tag'] );
 	if ( !empty( $input['title_tagatt'] ) )		$input['title_tagatt'] 	 = 	sanitize_text_field( $input['title_tagatt'] );

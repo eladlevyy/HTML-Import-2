@@ -48,7 +48,7 @@ class HTML_Import extends WP_Importer {
 			<?php _e( 'a single file', 'import-html-pages' ); ?></label>
 		</p>
 		
-		<p id="single">
+		<p id="single" style="display:none;">
 		<label for="import"><?php _e( 'Choose an HTML file from your computer:', 'import-html-pages' ); ?></label>
 		<input type="file" id="import" name="import" size="25" />
 		</p>
@@ -502,15 +502,27 @@ class HTML_Import extends WP_Importer {
 			$my_post['post_date'] = date( "Y-m-d H:i:s", $date );
 			$my_post['post_date_gmt'] = date( "Y-m-d H:i:s", $date );
 
+			
+			// VFS CUSTOM - content before & after
+			$content_before = '';
+			if( $options['content_before'] ){
+				$content_before = $options['content_before_content'];
+			}
+			
+			$content_after = '';
+			if( $options['content_after'] ){
+				$content_after = $options['content_after_content'];
+			}
+			
 			// content
 			if ( $options['import_content'] == "region" ) {
 				// appending strings unnecessarily so this plugin can be edited in Dreamweaver if needed
 				$contentmatch = '/<'.'!-- InstanceBeginEditable name="'.$options['content_region'].'" --'.'>(.*)<'.'!-- InstanceEndEditable --'.'>/isU';
 				preg_match( $contentmatch, $this->file, $contentmatches );
-				$my_post['post_content'] = $contentmatches[1];
+				$my_post['post_content'] = $content_before . $contentmatches[1] . $content_after;//VFS CUSTOM
 			}
 			else if ( $options['import_content'] == "file" ) { // import entire file
-				$my_post['post_content'] = $this->file;
+				$my_post['post_content'] = $content_before . $this->file . $content_after;//VFS CUSTOM
 			}
 			else { // it's a tag
 				$tag = $options['content_tag'];
@@ -521,18 +533,22 @@ class HTML_Import extends WP_Importer {
 					$xquery .= '[@'.$tagatt.'="'.$attval.'"]';
 				$content = $xml->xpath( $xquery );
 				if ( is_array( $content ) && isset( $content[0] ) && is_object( $content[0] ) ) {
-					$my_post['post_content'] = $content[0]->asXML(); // asXML() preserves HTML in content
+					$my_post['post_content'] = $content_before . $content[0]->asXML() . $content_after; // asXML() preserves HTML in content // VFS CUSTOM
 				}
 				else {  // fallback
 					$content = $xml->xpath( '//body' );
 					if ( is_array( $content ) && isset( $content[0] ) && is_object( $content[0] ) )
-						$my_post['post_content'] = $content[0]->asXML();
+						$my_post['post_content'] = $content_before . $content[0]->asXML() . $content_after;// VFS CUSTOM
 					else
-						$my_post['post_content'] = '';
+						$my_post['post_content'] = $content_before . '' . $content_after;// VFS CUSTOM
 				}
 			}
 			
 			// $my_post['post_content'] = (string) $my_post['post_content'];
+			
+			// No CDATA thanks.... VFS CUSTOM
+			$my_post['post_content'] = str_replace('<![CDATA[', '', $my_post['post_content']);
+			$my_post['post_content'] = str_replace(']]>','', $my_post['post_content']);
 			
 			if ( $options['title_inside'] )
 				$my_post['post_content'] = str_replace( $title, '', $my_post['post_content'] );
@@ -552,6 +568,10 @@ class HTML_Import extends WP_Importer {
 						preg_match( $custommatch, $this->file, $custommatches );
 						if ( isset( $custommatches[1] ) )
 							$customfields[$fieldname] = $custommatches[1];
+					}
+					elseif( $options['import_field'][$index] == "direct" ){
+						$fieldcontent = $options['customfield_direct'][$index];
+						$customfields[$fieldname] = $fieldcontent;
 					}
 					else { // it's a tag
 						$tag = $options['customfield_tag'][$index];
@@ -646,6 +666,8 @@ class HTML_Import extends WP_Importer {
 		// insert or update post
 		if ( $updatepost ) { 
 			$my_post['ID'] = $post_id; 
+			// don't overwrite the page slug if we're updating...right? VFS CUSTOM
+			unset($my_post['post_name']);
 			wp_update_post( $my_post );
 		}
 		else 
